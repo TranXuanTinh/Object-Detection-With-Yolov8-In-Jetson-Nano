@@ -22,6 +22,7 @@ public:
 
 private:
     std::string buildGstreamerPipeline(int sensor_id, int width, int height, int fps, int flip_method);
+    std::string buildRtspGstreamerPipeline(const std::string& uri);
 
     cv::VideoCapture cap_;
     FrameFormat format_;

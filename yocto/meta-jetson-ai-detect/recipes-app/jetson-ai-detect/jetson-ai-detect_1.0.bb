@@ -18,9 +18,9 @@ S = "${WORKDIR}"
 inherit cmake systemd pkgconfig
 
 DEPENDS = " \
-    cuda-toolkit-10-2 \
+    cuda-toolkit \
     cudnn \
-    tensorrt \
+    tensorrt-core \
     opencv \
     gstreamer1.0 \
     gstreamer1.0-plugins-base \
@@ -29,15 +29,14 @@ DEPENDS = " \
     yaml-cpp \
 "
 
-RDEPENDS_${PN} = " \
-    cuda-libraries-10-2 \
+RDEPENDS:${PN} = " \
+    cuda-libraries \
     cudnn \
-    tensorrt \
-    libopencv-core \
-    libopencv-imgproc \
-    libopencv-videoio \
-    gstreamer1.0-plugins-nvarguscamerasrc \
-    gstreamer1.0-plugins-nvvidconv \
+    tensorrt-core \
+    opencv \
+    gstreamer1.0-plugins-tegra \
+    tegra-libraries-argus \
+    nvargus-daemon \
     paho-mqtt-c \
     sqlite3 \
     yaml-cpp \
@@ -70,15 +69,15 @@ do_install() {
     install -d ${D}/var/lib/jetson-ai-detect
 }
 
-SYSTEMD_SERVICE_${PN} = "jetson-ai-detect.service"
+SYSTEMD_SERVICE:${PN} = "jetson-ai-detect.service"
 SYSTEMD_AUTO_ENABLE = "enable"
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${bindir}/edge-ai-manager \
     /opt/jetson-ai-detect \
     /var/log/jetson-ai-detect \
     /var/lib/jetson-ai-detect \
 "
 
-COMPATIBLE_MACHINE = "jetson-nano"
+COMPATIBLE_MACHINE = "(tegra210|jetson-nano.*)"
 

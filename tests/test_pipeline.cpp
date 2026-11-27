@@ -53,6 +53,21 @@ int main() {
     pipeline.stop();
     cam_svc.close();
 
+    // Verify Preprocessor produces identical CHW output for BGR (CV_8UC3) and hardware-VIC BGRx (CV_8UC4)
+    edge_ai::Preprocessor pre(640);
+    cv::Mat bgr_img(720, 1280, CV_8UC3, cv::Scalar(40, 120, 200));
+    cv::Mat bgrx_img(720, 1280, CV_8UC4, cv::Scalar(40, 120, 200, 255));
+    std::vector<float> chw_bgr;
+    std::vector<float> chw_bgrx;
+    edge_ai::PreprocessMeta meta_bgr;
+    edge_ai::PreprocessMeta meta_bgrx;
+    assert(pre.process(bgr_img, chw_bgr, meta_bgr));
+    assert(pre.process(bgrx_img, chw_bgrx, meta_bgrx));
+    assert(chw_bgr.size() == chw_bgrx.size());
+    for (size_t idx = 0; idx < chw_bgr.size(); ++idx) {
+        assert(std::abs(chw_bgr[idx] - chw_bgrx[idx]) < 1e-5f && "BGR and BGRx outputs must match");
+    }
+
     std::cout << "[Test] Pipeline integration test PASSED!" << std::endl;
     return 0;
 }

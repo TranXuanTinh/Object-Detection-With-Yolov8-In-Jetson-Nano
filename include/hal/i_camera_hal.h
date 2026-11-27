@@ -9,6 +9,7 @@ namespace edge_ai { namespace hal {
 
 enum class PixelFormat {
     BGR,
+    BGRx,
     RGB,
     NV12,
     YUYV

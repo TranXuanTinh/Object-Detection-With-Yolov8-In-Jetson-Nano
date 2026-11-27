@@ -80,7 +80,11 @@ bool JetsonGpuHAL::copyHostToDevice(const void* host_src, GpuBuffer dev_dst, siz
 
 bool JetsonGpuHAL::copyDeviceToHost(GpuBuffer dev_src, void* host_dst, size_t bytes) {
 #if defined(ENABLE_JETSON_CUDA)
-    return (cudaMemcpyAsync(host_dst, dev_src, bytes, cudaMemcpyDeviceToHost, stream_) == cudaSuccess);
+    if (cudaMemcpyAsync(host_dst, dev_src, bytes, cudaMemcpyDeviceToHost, stream_) != cudaSuccess) {
+        return false;
+    }
+    // Synchronize stream so host_dst is guaranteed complete before CPU PostProcessor reads it
+    return (cudaStreamSynchronize(stream_) == cudaSuccess);
 #else
     if (!dev_src || !host_dst) return false;
     std::memcpy(host_dst, dev_src, bytes);
@@ -111,6 +115,10 @@ bool JetsonGpuHAL::loadEngine(const std::string& onnx_path,
 
         engine_.reset(runtime_->deserializeCudaEngine(buffer.data(), size));
         if (engine_) {
+            nvinfer1::Dims in_d = engine_->getBindingDimensions(0);
+            nvinfer1::Dims out_d = engine_->getBindingDimensions(1);
+            input_dims_.shape.assign(in_d.d, in_d.d + in_d.nbDims);
+            output_dims_.shape.assign(out_d.d, out_d.d + out_d.nbDims);
             context_.reset(engine_->createExecutionContext());
             loaded_ = (context_ != nullptr);
             return loaded_;
@@ -148,6 +156,11 @@ bool JetsonGpuHAL::loadEngine(const std::string& onnx_path,
 
     engine_.reset(runtime_->deserializeCudaEngine(plan->data(), plan->size()));
     if (!engine_) return false;
+
+    nvinfer1::Dims in_d = engine_->getBindingDimensions(0);
+    nvinfer1::Dims out_d = engine_->getBindingDimensions(1);
+    input_dims_.shape.assign(in_d.d, in_d.d + in_d.nbDims);
+    output_dims_.shape.assign(out_d.d, out_d.d + out_d.nbDims);
 
     context_.reset(engine_->createExecutionContext());
     loaded_ = (context_ != nullptr);

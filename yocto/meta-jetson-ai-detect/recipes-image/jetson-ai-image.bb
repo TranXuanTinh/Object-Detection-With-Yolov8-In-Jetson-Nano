@@ -10,10 +10,11 @@ IMAGE_INSTALL = " \
     \
     kernel-modules \
     tegra-libraries \
-    cuda-toolkit-10-2 \
-    cuda-libraries-10-2 \
+    tegra-libraries-argus \
+    cuda-toolkit \
+    cuda-libraries \
     cudnn \
-    tensorrt \
+    tensorrt-core \
     tensorrt-plugins \
     \
     opencv \
@@ -21,11 +22,14 @@ IMAGE_INSTALL = " \
     gstreamer1.0-plugins-base \
     gstreamer1.0-plugins-good \
     gstreamer1.0-plugins-bad \
-    gstreamer1.0-plugins-nvarguscamerasrc \
-    gstreamer1.0-plugins-nvvidconv \
+    gstreamer1.0-plugins-tegra \
+    nvargus-daemon \
     \
-    edge-ai-manager \
+    jetson-ai-detect \
     \
+    tegra-nvpmodel \
+    tegra-tools-jetson-clocks \
+    tegra-tools-tegrastats \
     systemd \
     networkmanager \
     openssh \

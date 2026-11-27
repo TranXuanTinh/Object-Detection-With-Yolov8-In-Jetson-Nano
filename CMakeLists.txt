@@ -99,7 +99,8 @@ find_package(Threads REQUIRED)
 target_link_libraries(edge-ai-manager PRIVATE Threads::Threads)
 
 # Installation Targets for Yocto Packaging
-install(TARGETS edge-ai-manager DESTINATION /usr/bin)
+include(GNUInstallDirs)
+install(TARGETS edge-ai-manager DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(DIRECTORY config/ DESTINATION /opt/jetson-ai-detect/config)
 install(DIRECTORY models/ DESTINATION /opt/jetson-ai-detect/models)
 

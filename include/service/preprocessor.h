@@ -27,6 +27,8 @@ public:
 
 private:
     int input_size_{640};
+    cv::Mat resized_;
+    cv::Mat canvas_;
 };
 
 } // namespace edge_ai

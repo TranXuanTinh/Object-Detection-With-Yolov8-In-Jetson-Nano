@@ -1,7 +1,7 @@
 [Unit]
 Description=Edge AI Object Detection Daemon
-After=network-online.target
-Wants=network-online.target
+After=network-online.target nvargus-daemon.service
+Wants=network-online.target nvargus-daemon.service
 StartLimitIntervalSec=300
 StartLimitBurst=5
 
@@ -15,14 +15,14 @@ Restart=on-failure
 RestartSec=5
 TimeoutStartSec=300
 
-# Watchdog Integration
-WatchdogSec=60
+# Note: Hardware watchdog (/dev/watchdog) is kicked directly by HealthService.
+# Do not enable systemd WatchdogSec without sd_notify("WATCHDOG=1") integration.
 
 # Resource Allocation & Hardening
 MemoryMax=3200M
 CPUQuota=350%
 ProtectSystem=strict
-ReadWritePaths=/var/log/jetson-ai-detect /var/lib/jetson-ai-detect /opt/jetson-ai-detect/models /dev/watchdog
+ReadWritePaths=/var/log/jetson-ai-detect /var/lib/jetson-ai-detect /opt/jetson-ai-detect/models /dev/watchdog /tmp
 
 # Environment for Tegra GPU Libraries
 Environment=LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra:/usr/local/cuda-10.2/lib64
